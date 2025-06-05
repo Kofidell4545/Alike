@@ -1,0 +1,88 @@
+# Alike Wellness Platform ROFL Configuration
+name: alike-wellness
+version: 1.0.0
+tee: tdx  # Intel TDX for confidential computing
+kind: container
+
+# Resource requirements
+resources:
+  memory: 2Gi
+  storage: 10Gi
+  cpu:
+    count: 2
+
+# Network configuration
+network:
+  inbound:
+    - port: 8545  # RPC endpoint
+      protocol: tcp
+    - port: 8546  # WebSocket endpoint
+      protocol: tcp
+
+# Service configuration
+services:
+  - name: session-manager
+    type: http
+    port: 8545
+    routes:
+      - path: /api/sessions
+        methods: [GET, POST]
+      - path: /api/users
+        methods: [GET, POST]
+
+# Persistent storage
+volumes:
+  - name: session-data
+    size: 5Gi
+    encrypted: true
+
+# Smart contract integration
+contracts:
+  AlikeUser:
+    address: ${ALIKE_USER_ADDRESS}
+    interface: ./contracts/abis/AlikeUser.json
+  AlikeSession:
+    address: ${ALIKE_SESSION_ADDRESS}
+    interface: ./contracts/abis/AlikeSession.json
+
+# Confidential computing policies
+policies:
+  attestation:
+    required: true
+    type: tdx
+  encryption:
+    required: true
+    algorithm: aes-gcm
+
+# Health check configuration
+health:
+  http:
+    port: 8545
+    path: /health
+  initialDelaySeconds: 10
+  periodSeconds: 30
+
+# Runtime configuration
+runtime:
+  maxUptime: 24h
+  autoRestart: true
+  logging:
+    level: info
+
+# Monitoring and metrics
+monitoring:
+  metrics:
+    enabled: true
+    port: 9090
+  alerts:
+    enabled: true
+    endpoints:
+      - type: webhook
+        url: ${ALERT_WEBHOOK_URL}
+
+# Development configuration
+development:
+  enabled: false  # Set to true for development environment
+  debug:
+    port: 9229
+    enabled: false
