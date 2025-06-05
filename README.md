@@ -58,7 +58,14 @@ rofl build
 
 # Deploy ROFL app
 rofl deploy --network testnet
+
 ```
+## Contracts deployment addresses
+0xc88b31bAf6a62A1c1B23A41686880f9Cd9D81Ae7
+0x94c55C1E618d16E97347D8624B3207ec67858D58
+0x362438b83f5678A5D59Dc3576bc7b683218d3F36
+
+
 
 ### Frontend
 
