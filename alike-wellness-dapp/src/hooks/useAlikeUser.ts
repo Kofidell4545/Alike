@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useContractRead, useContractWrite, useAccount } from 'wagmi';
 import { type UserDetails, type UserResponse } from '../types/contracts';
-import { type Abi } from 'viem';
+import { type Address } from 'viem';
 import { contractAddresses } from '../contracts/config';
 import AlikeUserABI from '../contracts/abis/AlikeUser.json';
 
@@ -9,18 +9,18 @@ export const useAlikeUser = () => {
   const { address } = useAccount();
 
   // Check if user is registered
-  const { data: isRegistered } = useContractRead({
+  const { data: isRegistered, refetch: refetchRegistration } = useContractRead({
     address: contractAddresses.AlikeUser,
-    abi: AlikeUserABI.abi as Abi,
+    abi: AlikeUserABI.abi,
     functionName: 'isRegistered',
     args: [address],
     enabled: !!address,
   });
 
   // Get user details
-  const { data: userDetails } = useContractRead({
+  const { data: userDetails, refetch: refetchDetails } = useContractRead({
     address: contractAddresses.AlikeUser,
-    abi: AlikeUserABI.abi as Abi,
+    abi: AlikeUserABI.abi,
     functionName: 'users',
     args: [address],
     enabled: !!address && isRegistered,
@@ -29,7 +29,7 @@ export const useAlikeUser = () => {
   // Register user
   const { write: register } = useContractWrite({
     address: contractAddresses.AlikeUser,
-    abi: AlikeUserABI.abi as Abi,
+    abi: AlikeUserABI.abi,
     functionName: 'registerUser',
   });
 
@@ -38,10 +38,15 @@ export const useAlikeUser = () => {
     if (isRegistered) throw new Error('User already registered');
 
     try {
-      if (!register || !address) return;
+      if (!register || !address) throw new Error('Failed to register');
       // Use first 6 characters of wallet address as username
       const username = `user_${address.slice(2, 8)}`;
       register({ args: [username] });
+      // Refetch user data
+      await Promise.all([
+        refetchRegistration(),
+        refetchDetails()
+      ]);
     } catch (error) {
       console.error('Error registering user:', error);
       throw error;
@@ -50,10 +55,7 @@ export const useAlikeUser = () => {
 
   return {
     isRegistered: !!isRegistered,
-    userDetails: userDetails ? {
-      username: userDetails[0],
-      registrationDate: Number(userDetails[1])
-    } : null,
+    userDetails: userDetails ? (userDetails as UserResponse) : null,
     registerUser
   };
 };

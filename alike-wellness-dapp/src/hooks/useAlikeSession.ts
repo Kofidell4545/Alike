@@ -9,7 +9,7 @@ export const useAlikeSession = () => {
   const { address } = useAccount();
 
   // Get user's past sessions
-  const { data: pastSessions } = useContractRead({
+  const { data: pastSessions, refetch: refetchPastSessions } = useContractRead({
     address: contractAddresses.AlikeSession,
     abi: AlikeSessionABI.abi,
     functionName: 'getUserSessions',
@@ -18,7 +18,7 @@ export const useAlikeSession = () => {
   });
 
   // Get user's upcoming sessions
-  const { data: upcomingSessions } = useContractRead({
+  const { data: upcomingSessions, refetch: refetchUpcomingSessions } = useContractRead({
     address: contractAddresses.AlikeSession,
     abi: AlikeSessionABI.abi,
     functionName: 'getUpcomingSessions',
@@ -27,20 +27,27 @@ export const useAlikeSession = () => {
   });
 
   // Book a session
-  const { writeAsync: bookSession } = useContractWrite({
+  const { write: bookSession } = useContractWrite({
     address: contractAddresses.AlikeSession,
     abi: AlikeSessionABI.abi,
     functionName: 'bookSession',
   });
 
-  const book = useCallback(async (therapistAddress: string, timestamp: number) => {
+
+
+  const book = useCallback(async (therapistAddress: Address, timestamp: number) => {
     if (!address) throw new Error('Wallet not connected');
 
     try {
       if (!bookSession) throw new Error('Failed to book session');
-      const tx = await bookSession({ args: [therapistAddress, timestamp] });
-      await tx.wait();
-      return tx;
+      bookSession({
+        args: [therapistAddress, BigInt(timestamp)]
+      });
+      // Refetch sessions after booking
+      await Promise.all([
+        refetchPastSessions(),
+        refetchUpcomingSessions()
+      ]);
     } catch (error) {
       console.error('Error booking session:', error);
       throw error;
@@ -48,20 +55,20 @@ export const useAlikeSession = () => {
   }, [address, bookSession]);
 
   return {
-    pastSessions: (pastSessions as SessionResponse[] | undefined)?.map(session => ({
+    pastSessions: pastSessions ? (pastSessions as unknown as SessionResponse[]).map(session => ({
       id: Number(session[0]),
       user: session[1],
       therapist: session[2],
       timestamp: Number(session[3]),
       completed: session[4]
-    })) || [],
-    upcomingSessions: (upcomingSessions as SessionResponse[] | undefined)?.map(session => ({
+    })) : [],
+    upcomingSessions: upcomingSessions ? (upcomingSessions as unknown as SessionResponse[]).map(session => ({
       id: Number(session[0]),
       user: session[1],
       therapist: session[2],
       timestamp: Number(session[3]),
       completed: session[4]
-    })) || [],
+    })) : [],
     bookSession: book
   };
 };
