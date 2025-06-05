@@ -1,5 +1,7 @@
 import { Icon } from '@iconify/react';
 import DashboardNavbar from '../components/DashboardNavbar';
+import PastSessions from '../components/PastSessions';
+import '../styles/components/PastSessions.css';
 
 const Profile = () => {
   const userStats = {
@@ -92,10 +94,15 @@ const Profile = () => {
                   </button>
                 </div>
               </div>
+
+              <div className="past-sessions-section">
+                <PastSessions />
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 };

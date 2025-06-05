@@ -1,7 +1,9 @@
 import { Button } from '@heroui/react';
 import { Icon } from '@iconify/react';
+import { useWalletConnection } from '../hooks/useWalletConnection';
 
 const CTASection = () => {
+  const { isConnected, handleConnection } = useWalletConnection();
   return (
     <section className="cta-section">
       <div className="container">
@@ -9,9 +11,14 @@ const CTASection = () => {
         <p className="cta-subtitle">
           Take the first step toward better mental health with complete privacy and security.
         </p>
-        <Button color="default" size="lg" className="cta-button">
+        <Button 
+          color="default" 
+          size="lg" 
+          className="cta-button"
+          onClick={handleConnection}
+        >
           <Icon icon="lucide:shield" className="btn-icon" />
-          Start Anonymously
+          {isConnected ? 'Connected' : 'Start Anonymously'}
         </Button>
       </div>
     </section>

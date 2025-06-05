@@ -30,9 +30,10 @@
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.profile-card {
+.profile-page {
   background: white;
   border-radius: var(--radius-lg);
   padding: 2rem;
@@ -168,6 +169,13 @@
   color: var(--primary);
 }
 
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 3rem;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -205,6 +213,10 @@
   height: 1.25rem;
 }
 
+.upcoming-sessions {
+  margin-bottom: 3rem;
+}
+
 .upcoming-sessions h3 {
   font-size: 1.125rem;
   font-weight: 600;
@@ -213,6 +225,7 @@
 }
 
 .empty-sessions {
+  margin-top: 1.5rem;
   background: white;
   border-radius: var(--radius-lg);
   padding: 3rem;
@@ -269,5 +282,10 @@
 @media (max-width: 768px) {
   .profile-content {
     grid-template-columns: 1fr;
+    margin-bottom: 2rem;
+  }
+
+  .profile-sections {
+    padding: 0 1rem;
   }
 }

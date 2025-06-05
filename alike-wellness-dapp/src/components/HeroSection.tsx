@@ -1,7 +1,9 @@
 import { Button } from '@heroui/react';
 import { Icon } from '@iconify/react';
+import { useWalletConnection } from '../hooks/useWalletConnection';
 
 const HeroSection = () => {
+  const { isConnected, handleConnection } = useWalletConnection();
   return (
     <section className="hero-section">
       <div className="hero-container">
@@ -13,9 +15,14 @@ const HeroSection = () => {
             Get professional help for addiction, mental health, and nutrition challenges while maintaining complete anonymity and data privacy.
           </p>
           <div className="hero-actions">
-            <Button color="primary" size="lg" className="hero-btn primary">
+            <Button 
+              color="primary"
+              size="lg" 
+              className="hero-btn primary"
+              onClick={handleConnection}
+            >
               <Icon icon="lucide:shield" className="btn-icon" />
-              Start Anonymously
+              {isConnected ? 'Connected' : 'Start Anonymously'}
             </Button>
             <Button variant="flat" size="lg" className="hero-btn secondary">
               <Icon icon="lucide:info" className="btn-icon" />

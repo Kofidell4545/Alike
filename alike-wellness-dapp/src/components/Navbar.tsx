@@ -1,9 +1,10 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@heroui/react';
 import { Icon } from '@iconify/react';
+import { useWalletConnection } from '../hooks/useWalletConnection';
 
 const Navbar = () => {
+  const { isConnected, handleConnection } = useWalletConnection();
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -25,9 +26,13 @@ const Navbar = () => {
               Dashboard
             </Button>
           </Link>
-          <Button color="primary" className="start-btn">
+          <Button 
+            color="primary" 
+            className="start-btn"
+            onClick={handleConnection}
+          >
             <Icon icon="lucide:shield" className="btn-icon" />
-            Start Anonymously
+            {isConnected ? 'Connected' : 'Start Anonymously'}
           </Button>
         </div>
       </div>

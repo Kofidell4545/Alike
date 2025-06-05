@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
+import { useWalletConnection } from '../hooks/useWalletConnection';
 
 const DashboardNavbar = () => {
+  const { isConnected, handleConnection } = useWalletConnection();
   return (
     <nav className="dashboard-navbar">
       <div className="navbar-container">
@@ -27,9 +29,9 @@ const DashboardNavbar = () => {
           </Link>
         </div>
 
-        <button className="connect-wallet-btn">
+        <button className="connect-wallet-btn" onClick={handleConnection}>
           <Icon icon="lucide:wallet" className="wallet-icon" />
-          Connect Wallet
+          {isConnected ? 'Connected' : 'Connect Wallet'}
         </button>
       </div>
     </nav>
